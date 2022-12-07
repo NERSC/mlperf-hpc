@@ -40,6 +40,7 @@ def parse_arguments():
     AP.add_argument("--data_dir_prefix", type=str, default='/', help="prefix to data dir")
     AP.add_argument("--max_inter_threads", type=int, default=1, help="Maximum number of concurrent readers")
     AP.add_argument("--max_epochs", type=int, default=30, help="Maximum number of epochs to train")
+    AP.add_argument("--min_epochs", type=int, default=0, help="Minimum number of epochs to train (regardless of --target_iou)")
     AP.add_argument("--save_frequency", type=int, default=0, help="Frequency in number of epochs with which the model is saved")
     AP.add_argument("--gradient_accumulation_frequency", type=int, default=1, help="Number of gradient accumulation steps before update")
     AP.add_argument("--logging_frequency", type=int, default=0, help="Frequency in number of steps with which the training progress is logged. If not strictly positive, logging will be performed once after each epoch")

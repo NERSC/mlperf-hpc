@@ -217,10 +217,10 @@ def main(pargs):
         bnstats_handler.synchronize()
         
         # validation
-        stop_training = validate(pargs, comm_rank, comm_size,
-                                 device, step, epoch, 
-                                 net_validate, criterion, validation_loader, 
-                                 logger)
+        target_reached = validate(pargs, comm_rank, comm_size,
+                                  device, step, epoch,
+                                  net_validate, criterion, validation_loader,
+                                  logger)
 
         # log the epoch
         logger.log_end(key = "epoch_stop", metadata = {'epoch_num': epoch+1, 'step_num': step}, sync = True)
@@ -239,6 +239,9 @@ def main(pargs):
                 torch.save(checkpoint, os.path.join(output_dir, pargs.model_prefix + "_step_" + str(step) + ".cpt") )
                 logger.log_end(key = "save_stop", metadata = {'epoch_num': epoch+1, 'step_num': step}, sync = True)
                     
+        # override stopping criteria if minimum epochs set
+        stop_training = (target_reached and epoch >= pargs.min_epochs)
+
         # are we done?
         if (epoch >= pargs.max_epochs) or stop_training:
             break
