@@ -190,7 +190,7 @@ def main(pargs):
     step = start_step
     epoch = start_epoch
     current_lr = pargs.start_lr if not pargs.lr_schedule else scheduler.get_last_lr()[0]
-    stop_training = False
+    target_reached = False
     net_train.train()
 
     # start trining
@@ -220,7 +220,7 @@ def main(pargs):
         target_reached = validate(pargs, comm_rank, comm_size,
                                   device, step, epoch,
                                   net_validate, criterion, validation_loader,
-                                  logger)
+                                  logger) or target_reached
 
         # log the epoch
         logger.log_end(key = "epoch_stop", metadata = {'epoch_num': epoch+1, 'step_num': step}, sync = True)
