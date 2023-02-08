@@ -47,18 +47,24 @@ def get_dataloaders(pargs, root_dir, device, seed, comm_size, comm_rank):
     validation_set = CamDataset(validation_dir, 
                                 statsfile = os.path.join(root_dir, 'stats.h5'),
                                 channels = pargs.channels,
-                                allow_uneven_distribution = True,
+                                allow_uneven_distribution = False,
                                 shuffle = False,
                                 preprocess = True,
-                                comm_size = comm_size,
-                                comm_rank = comm_rank)
+                                comm_size = 1,
+                                comm_rank = 0)
+
+    distributed_validation_sampler = DistributedSampler(validation_set,
+                                                        num_replicas = comm_size,
+                                                        rank = comm_rank,
+                                                        shuffle = False,
+                                                        drop_last = pargs.drop_last_batch)
     
-    # use batch size = 1 here to make sure that we do not drop a sample
     validation_loader = DataLoader(validation_set,
-                                   1,
+                                   pargs.local_batch_size,
                                    num_workers = min([pargs.max_inter_threads, pargs.local_batch_size]),
+                                   sampler = distributed_validation_sampler,
                                    pin_memory = True,
-                                   drop_last = False)
+                                   drop_last = pargs.drop_last_batch)
     
     validation_size = validation_set.global_size    
         
