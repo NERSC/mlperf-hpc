@@ -32,14 +32,14 @@ def get_dataloaders(pargs, root_dir, device, seed, comm_size, comm_rank):
                                                    num_replicas = comm_size,
                                                    rank = comm_rank,
                                                    shuffle = True,
-                                                   drop_last = True)
+                                                   drop_last = pargs.drop_last_batch)
     
     train_loader = DataLoader(train_set,
                               pargs.local_batch_size,
                               num_workers = min([pargs.max_inter_threads, pargs.local_batch_size]),
                               sampler = distributed_train_sampler,
                               pin_memory = True,
-                              drop_last = True)
+                              drop_last = pargs.drop_last_batch)
 
     train_size = train_set.global_size
 
